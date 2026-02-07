@@ -6,9 +6,6 @@
 
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 
-APP="Kener"
-header_info "$APP"
-variables
 color
 catch_errors
 setting_up_container
