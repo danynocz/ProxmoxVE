@@ -33,6 +33,10 @@
     },
     "notes": [
         {
+            "text": "To register the first user, open /manage/setup on your domain or IP address (e.g., https://example.com/manage/setup or http://192.168.1.100:3000/manage/setup).",
+            "type": "info"
+        },
+        {
             "text": "Kener runs in Docker, and all configuration is managed through the docker-compose.yaml file and the .env file.",
             "type": "info"
         },
