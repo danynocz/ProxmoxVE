@@ -14,20 +14,11 @@ update_os
 
 msg_info "Installing dependencies"
 $STD apt update
-$STD apt install -y git apt-transport-https openssl lsb-release gnupg
+$STD apt install -y git openssl lsb-release gnupg
 msg_ok "Dependencies installed"
 
 msg_info "Installing Docker"
-$STD install -m 0755 -d /etc/apt/keyrings
-$STD curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-$STD chmod a+r /etc/apt/keyrings/docker.asc
-
-$STD tee > /etc/apt/sources.list.d/docker.list <<EOF
-deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $(lsb_release -cs) stable
-EOF
-
-$STD apt update
-$STD apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+$STD apt install -y docker.io docker-compose-plugin
 msg_ok "Docker installed"
 
 msg_info "Creating Kener folder structure"
@@ -36,7 +27,7 @@ chown -R root:root /opt/kener
 msg_ok "Folder structure ready"
 
 msg_info "Creating .env file"
-cat > /opt/kener/.env <<EOF
+cat <<EOF > /opt/kener/.env
 KENER_SECRET_KEY=$(openssl rand -hex 32)
 POSTGRES_USER=kener
 POSTGRES_PASSWORD=$(openssl rand -hex 16)
@@ -46,14 +37,14 @@ SMTP_PORT=587
 SMTP_USER=user@example.com
 SMTP_PASS=yourpassword
 SMTP_SECURE=true
-SMTP_FROM_EMAIL="Kener <noreply@example.com>"
+SMTP_FROM_EMAIL=Kener <noreply@example.com>
 EOF
 msg_ok ".env file created at /opt/kener/.env"
 
 HOST_IP=$(hostname -I | awk '{print $1}')
 
 msg_info "Creating Docker Compose file for Kener"
-cat > /opt/kener/docker-compose.yaml <<EOF
+cat <<EOF > /opt/kener/docker-compose.yaml
 version: "3.8"
 
 services:
@@ -65,12 +56,6 @@ services:
       TZ: Europe/Prague
       KENER_SECRET_KEY: \${KENER_SECRET_KEY}
       DATABASE_URL: postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}
-#      SMTP_HOST: \${SMTP_HOST}
-#      SMTP_PORT: \${SMTP_PORT}
-#      SMTP_USER: \${SMTP_USER}
-#      SMTP_PASS: \${SMTP_PASS}
-#      SMTP_SECURE: \${SMTP_SECURE}
-#      SMTP_FROM_EMAIL: \${SMTP_FROM_EMAIL}
     ports:
       - "3000:3000"
     volumes:
