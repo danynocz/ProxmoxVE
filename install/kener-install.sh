@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Kener install script for ProxmoxVE container (Docker / production mode)
 # Author: danynocz
-# License: MIT
+# License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://kener.ing
 
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
