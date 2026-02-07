@@ -8,6 +8,7 @@
 source /dev/stdin <<<"$FUNCTIONS_FILE_PATH"
 
 color
+verb_ip6
 catch_errors
 setting_up_container
 network_check
@@ -15,7 +16,7 @@ update_os
 
 msg_info "Installing base dependencies"
 $STD apt update
-$STD apt install -y ca-certificates curl git openssl lsb-release gnupg
+$STD apt install -y git openssl lsb-release gnupg
 msg_ok "Dependencies installed"
 
 msg_info "Setting up Docker APT repository"
@@ -63,7 +64,7 @@ services:
     container_name: kener
     environment:
       ORIGIN: http://${HOST_IP}:3000
-      TZ: Europe/Prague
+      TZ: UTC
       KENER_SECRET_KEY: \${KENER_SECRET_KEY}
       DATABASE_URL: postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}
     ports:
