@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/build.func)
-# Copyright (c) 2021-2026 danynocz
-# Author: danynocz
+source <(curl -fsSL https://raw.githubusercontent.com/danynocz/ProxmoxVE/add/kener/misc/build.func)
+# Copyright (c) 2021-2026 community-scripts ORG
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://kener.ing
 
@@ -26,20 +25,18 @@ function update_script() {
   check_container_storage
   check_container_resources
 
-  if [[ ! -d /opt/kener ]]; then
+  if [[ ! -d $INSTALL_DIR ]]; then
     msg_error "No ${APP} Installation Found!"
     exit
   fi
 
   msg_info "Updating Docker images"
-  cd /opt/kener
+  cd $INSTALL_DIR
   $STD docker compose pull
   $STD docker compose up -d
   msg_ok "Updated containers"
   exit
 }
-
-
 
 start
 build_container
