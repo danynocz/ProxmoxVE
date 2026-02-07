@@ -48,12 +48,6 @@ KENER_SECRET_KEY=$(openssl rand -hex 32)
 POSTGRES_USER=kener
 POSTGRES_PASSWORD=$(openssl rand -hex 16)
 POSTGRES_DB=kener
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=user@example.com
-SMTP_PASS=yourpassword
-SMTP_SECURE=true
-SMTP_FROM_EMAIL=Kener <noreply@example.com>
 EOF
 msg_ok ".env file created"
 
