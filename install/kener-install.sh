@@ -26,7 +26,7 @@ $STD chmod a+r /etc/apt/keyrings/docker.asc
 cat <<EOF > /etc/apt/sources.list.d/docker.sources
 Types: deb
 URIs: https://download.docker.com/linux/debian
-Suites: $(. /etc/os-release && echo "\$VERSION_CODENAME")
+Suites: bookworm
 Components: stable
 Signed-By: /etc/apt/keyrings/docker.asc
 EOF
