@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Kener install script for ProxmoxVE container
+# Copyright (c) 2021-2026 community-scripts ORG
 # Author: danynocz
 # License: MIT | https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 # Source: https://kener.ing
@@ -12,19 +13,34 @@ setting_up_container
 network_check
 update_os
 
-msg_info "Installing dependencies"
+msg_info "Installing base dependencies"
 $STD apt update
-$STD apt install -y git openssl lsb-release gnupg
+$STD apt install -y ca-certificates curl git openssl lsb-release gnupg
 msg_ok "Dependencies installed"
 
-msg_info "Installing Docker"
-$STD apt install -y docker.io docker-compose-plugin
+msg_info "Setting up Docker APT repository"
+$STD install -m 0755 -d /etc/apt/keyrings
+$STD curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+$STD chmod a+r /etc/apt/keyrings/docker.asc
+
+cat <<EOF > /etc/apt/sources.list.d/docker.sources
+Types: deb
+URIs: https://download.docker.com/linux/debian
+Suites: $(. /etc/os-release && echo "\$VERSION_CODENAME")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+msg_ok "Docker repository added"
+
+msg_info "Installing Docker Engine"
+$STD apt update
+$STD apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 msg_ok "Docker installed"
 
-msg_info "Creating Kener folder structure"
+msg_info "Creating Kener directory structure"
 mkdir -p /opt/kener/uploads
 chown -R root:root /opt/kener
-msg_ok "Folder structure ready"
+msg_ok "Directory structure ready"
 
 msg_info "Creating .env file"
 cat <<EOF > /opt/kener/.env
@@ -39,11 +55,11 @@ SMTP_PASS=yourpassword
 SMTP_SECURE=true
 SMTP_FROM_EMAIL=Kener <noreply@example.com>
 EOF
-msg_ok ".env file created at /opt/kener/.env"
+msg_ok ".env file created"
 
 HOST_IP=$(hostname -I | awk '{print $1}')
 
-msg_info "Creating Docker Compose file for Kener"
+msg_info "Creating Docker Compose file"
 cat <<EOF > /opt/kener/docker-compose.yaml
 version: "3.8"
 
@@ -85,12 +101,12 @@ volumes:
   pgdata:
     name: kener_postgres
 EOF
-msg_ok "Docker Compose file created at /opt/kener/docker-compose.yaml"
+msg_ok "Docker Compose file created"
 
-msg_info "Starting Kener Docker containers"
+msg_info "Starting Kener containers"
 cd /opt/kener
 $STD docker compose up -d
-msg_ok "Kener containers are running"
+msg_ok "Kener is running"
 
 motd_ssh
 customize
