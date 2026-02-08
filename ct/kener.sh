@@ -34,8 +34,9 @@ function update_script() {
   msg_info "Updating ${APP} from GitHub"
   cd "$INSTALL_DIR"
 
-  $STD git pull
-  $STD npm install
+  $STD git pull >/tmp/kener_update.log 2>&1
+
+  $STD npm install --quiet >/tmp/kener_update.log 2>&1
 
   msg_info "Restarting ${APP} service"
   $STD systemctl restart ${SERVICE}
@@ -43,6 +44,7 @@ function update_script() {
   msg_ok "${APP} updated successfully"
   exit
 }
+
 
 start
 build_container

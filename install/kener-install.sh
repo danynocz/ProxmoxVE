@@ -25,23 +25,23 @@ $STD apt install -y \
   build-essential
 msg_ok "Base dependencies installed"
 
-msg_info "Installing Node.js 20 (NodeSource)"
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-$STD apt install -y nodejs
+msg_info "Installing Node.js 20 (NodeSource) quietly"
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -s -- -q >/tmp/nodesource.log 2>&1
+$STD apt install -y nodejs >/tmp/nodesource.log 2>&1
 msg_ok "Node.js installed"
 
 msg_info "Verifying Node.js & npm"
-node -v
-npm -v
+node -v >/dev/null 2>&1
+npm -v >/dev/null 2>&1
 msg_ok "Node.js & npm verified"
 
 msg_info "Cloning Kener repository"
-git clone https://github.com/rajnandan1/kener.git /opt/kener
+git clone https://github.com/rajnandan1/kener.git /opt/kener >/tmp/kener_clone.log 2>&1
 cd /opt/kener
 msg_ok "Repository cloned"
 
-msg_info "Installing Node dependencies"
-$STD npm install
+msg_info "Installing Node dependencies quietly"
+$STD npm install >/tmp/kener_npm.log 2>&1
 msg_ok "Dependencies installed"
 
 msg_info "Creating .env file"
@@ -53,9 +53,9 @@ KENER_SECRET_KEY=$(openssl rand -hex 32)
 EOF
 msg_ok ".env file created"
 
-msg_info "Preparing SQLite database"
-$STD npm exec knex migrate:latest
-$STD npm exec knex seed:run
+msg_info "Preparing SQLite database quietly"
+$STD npm exec knex migrate:latest >/tmp/kener_db.log 2>&1
+$STD npm exec knex seed:run >/tmp/kener_db.log 2>&1
 msg_ok "Database initialized"
 
 msg_info "Creating systemd service"
