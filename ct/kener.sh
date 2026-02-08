@@ -27,15 +27,20 @@ function update_script() {
   check_container_resources
 
   if [[ ! -d $INSTALL_DIR ]]; then
-    msg_error "No ${APP} Installation Found!"
-    exit
+    msg_error "No ${APP} installation found!"
+    exit 1
   fi
 
-  msg_info "Updating Docker images"
-  cd $INSTALL_DIR
-  $STD docker compose pull
-  $STD docker compose up -d
-  msg_ok "Updated containers"
+  msg_info "Updating ${APP} from GitHub"
+  cd "$INSTALL_DIR"
+
+  $STD git pull
+  $STD npm install
+
+  msg_info "Restarting ${APP} service"
+  $STD systemctl restart ${SERVICE}
+
+  msg_ok "${APP} updated successfully"
   exit
 }
 
