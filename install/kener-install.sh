@@ -16,13 +16,24 @@ update_os
 
 msg_info "Installing base dependencies"
 $STD apt update
-$STD apt install -y git curl openssl sqlite3 build-essential
+$STD apt install -y \
+  git \
+  curl \
+  ca-certificates \
+  openssl \
+  sqlite3 \
+  build-essential
 msg_ok "Base dependencies installed"
 
 msg_info "Installing Node.js 20 (NodeSource)"
-$STD curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 $STD apt install -y nodejs
 msg_ok "Node.js installed"
+
+msg_info "Verifying Node.js & npm"
+node -v
+npm -v
+msg_ok "Node.js & npm verified"
 
 msg_info "Cloning Kener repository"
 git clone https://github.com/rajnandan1/kener.git /opt/kener
@@ -34,7 +45,7 @@ $STD npm install
 msg_ok "Dependencies installed"
 
 msg_info "Creating .env file"
-cat <<EOF > /opt/kener/.env
+cat <<EOF >/opt/kener/.env
 HOST=0.0.0.0
 PORT=3000
 ORIGIN=http://localhost:3000
@@ -43,12 +54,12 @@ EOF
 msg_ok ".env file created"
 
 msg_info "Preparing SQLite database"
-$STD npx knex migrate:latest
-$STD npx knex seed:run
+$STD npm exec knex migrate:latest
+$STD npm exec knex seed:run
 msg_ok "Database initialized"
 
 msg_info "Creating systemd service"
-cat <<EOF > /etc/systemd/system/kener.service
+cat <<EOF >/etc/systemd/system/kener.service
 [Unit]
 Description=Kener Status Page
 After=network.target
@@ -56,7 +67,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/opt/kener
-ExecStart=/usr/bin/npm run dev
+ExecStart=/usr/bin/npm exec vite dev -- --host 0.0.0.0 --port 3000
 Restart=always
 Environment=NODE_ENV=production
 
